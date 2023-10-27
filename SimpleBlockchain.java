@@ -163,8 +163,7 @@ class Blockchain {
 public class SimpleBlockchain {
     public static void main(String[] args) {
         Blockchain blockchain = new Blockchain();
-
-
+       // DatabaseManager dbManager = new DatabaseManager();
 
         // Create student objects and add them to the blockchain
         Student student1 = new Student("Joe Oakes", 1.3, 120);
