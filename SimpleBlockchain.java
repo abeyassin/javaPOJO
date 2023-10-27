@@ -62,30 +62,38 @@ class Block {
 
 
 
-    // Calculate the hash of the block
+    // Calculate the hash of the block with a NONCE value of "00"
     public String calculateHash() {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            String input = index + timestamp + previousHash + student.getName() + student.getGpa() + student.getCredits();
-            byte[] hashBytes = digest.digest(input.getBytes("UTF-8"));
-            StringBuilder hexString = new StringBuilder();
+            int nonce = 0;
+            String input;
 
+            while (true) {
+                input = index + timestamp + previousHash + student.getName() + student.getGpa() + student.getCredits() + nonce;
+                byte[] hashBytes = digest.digest(input.getBytes("UTF-8"));
+                StringBuilder hexString = new StringBuilder();
 
+                for (byte b : hashBytes) {
+                    String hex = Integer.toHexString(0xff & b);
+                    if (hex.length() == 1) hexString.append('0');
+                    hexString.append(hex);
+                }
 
-            for (byte b : hashBytes) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
+                String hash = hexString.toString();
+
+                // Check if the hash starts with "00"
+                if (hash.startsWith("150")) {
+                    return hash;
+                }
+
+                // If not, increment the nonce and try again
+                nonce++;
             }
-
-
-
-            return hexString.toString();
         } catch (NoSuchAlgorithmException | java.io.UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
     }
-
 
 
     // Getters
@@ -94,7 +102,7 @@ class Block {
     }
 
 
-
+    // Getters
     public long getTimestamp() {
         return timestamp;
     }
